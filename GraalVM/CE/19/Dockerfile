@@ -12,8 +12,8 @@ ARG GRAAL_VERSION=19.3.0
 ARG JAVA_VERSION=java8
 ENV LANG=en_US.UTF-8
 
-ENV GRAALVM_PKG=https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAAL_VERSION/graalvm-ce-$JAVA_VERSION-linux-amd64-$GRAAL_VERSION.tar.gz \
-    JAVA_HOME=/opt/graalvm-ce-$JAVA_VERSION-$GRAAL_VERSION/
+#ENV GRAALVM_PKG=https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAAL_VERSION/graalvm-ce-$JAVA_VERSION-linux-amd64-$GRAAL_VERSION.tar.gz \
+ENV    JAVA_HOME=/opt/graalvm-ee-$JAVA_VERSION-$GRAAL_VERSION/
 
 RUN yum update -y oraclelinux-release-el7 \
     && yum install -y oraclelinux-developer-release-el7 oracle-softwarecollection-release-el7 \
@@ -27,11 +27,9 @@ RUN yum update -y oraclelinux-release-el7 \
 RUN fc-cache -f -v
 
 ADD gu-wrapper.sh /usr/local/bin/gu
-
-RUN set -eux \
-    && curl --fail --silent --location --retry 3 ${GRAALVM_PKG} \
-    | gunzip | tar x -C /opt/ \
-
+COPY graalvm-ee-java8-linux-amd64-19.3.0.tar.gz .
+COPY native-image-installable-svm-svmee-java8-linux-amd64-19.3.0.jar .
+RUN tar -zxvf graalvm-ee-java8-linux-amd64-19.3.0.tar.gz -C /opt \
     # Set alternative links
     && mkdir -p "/usr/java" \
     && ln -sfT "$JAVA_HOME" /usr/java/default \
@@ -43,5 +41,5 @@ RUN set -eux \
     done \
 
     && chmod +x /usr/local/bin/gu
-
+RUN gu -L install native-image-installable-svm-svmee-java8-linux-amd64-19.3.0.jar
 CMD java -version
