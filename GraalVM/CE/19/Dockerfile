@@ -8,12 +8,12 @@ FROM oraclelinux:7-slim
 # Note: If you are behind a web proxy, set the build variables for the build:
 #       E.g.:  docker build --build-arg "https_proxy=..." --build-arg "http_proxy=..." --build-arg "no_proxy=..." ...
 
-ARG GRAAL_VERSION=19.3.0
+ARG GRAAL_VERSION=20.0.0-dev
 ARG JAVA_VERSION=java8
 ENV LANG=en_US.UTF-8
 
 #ENV GRAALVM_PKG=https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-$GRAAL_VERSION/graalvm-ce-$JAVA_VERSION-linux-amd64-$GRAAL_VERSION.tar.gz \
-ENV    JAVA_HOME=/opt/graalvm-ee-$JAVA_VERSION-$GRAAL_VERSION/
+ENV    JAVA_HOME=/opt/graalvm-ce-$JAVA_VERSION-$GRAAL_VERSION/
 
 RUN yum update -y oraclelinux-release-el7 \
     && yum install -y oraclelinux-developer-release-el7 oracle-softwarecollection-release-el7 \
@@ -27,9 +27,9 @@ RUN yum update -y oraclelinux-release-el7 \
 RUN fc-cache -f -v
 
 ADD gu-wrapper.sh /usr/local/bin/gu
-COPY graalvm-ee-java8-linux-amd64-19.3.0.tar.gz .
-COPY native-image-installable-svm-svmee-java8-linux-amd64-19.3.0.jar .
-RUN tar -zxvf graalvm-ee-java8-linux-amd64-19.3.0.tar.gz -C /opt \
+COPY graalvm-ce-java8-linux-amd64-20.0.0-20191212.120123-266.tar.gz .
+COPY native-image-installable-svm-java8-linux-amd64-20.0.0-20191212.115512-259.jar .
+RUN tar -zxvf graalvm-ce-java8-linux-amd64-20.0.0-20191212.120123-266.tar.gz -C /opt \
     # Set alternative links
     && mkdir -p "/usr/java" \
     && ln -sfT "$JAVA_HOME" /usr/java/default \
@@ -41,5 +41,5 @@ RUN tar -zxvf graalvm-ee-java8-linux-amd64-19.3.0.tar.gz -C /opt \
     done \
 
     && chmod +x /usr/local/bin/gu
-RUN gu -L install native-image-installable-svm-svmee-java8-linux-amd64-19.3.0.jar
+RUN gu -L install native-image-installable-svm-java8-linux-amd64-20.0.0-20191212.115512-259.jar
 CMD java -version
